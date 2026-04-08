@@ -7,14 +7,14 @@ Guidance for Claude Code when working in this repository.
 **Next Play — Kanban Task Board** (internship assessment).
 A polished, full-stack Kanban board inspired by Asana / Linear / Notion. The full brief lives at `docs/NP SDE Assessment Challenge.md` — it is the source of truth for requirements.
 
-The repo currently contains only the brief; the application has not been scaffolded yet.
+The app is scaffolded and implements the full core spec plus most advanced features (spaces, team members, comments, activity log, labels, filters, stats). Remaining work is polish, bug fixes, and deployment.
 
 ## Required Stack
 
 - **React + Vite + TailwindCSS** (mandatory)
 - **TypeScript** (recommended)
 - **Supabase** (free tier) — Postgres, Auth, RLS
-- **react-beautiful-dnd** for drag-and-drop
+- **@hello-pangea/dnd** for drag-and-drop (the maintained fork of the now-archived `react-beautiful-dnd`; same API, React 19 compatible)
 - Hosting: Vercel / Netlify / Cloudflare Pages (free tier)
 - No custom backend — the frontend talks to Supabase directly
 
@@ -39,6 +39,7 @@ Avoid generic "todo list" aesthetics — the bar is "something a team would want
   - Guests are real users with `anonymous = true`
   - On later email/password sign-in, upgrade the same row (`anonymous → false`); do not create a new user
 - **RLS enabled** so users only see their own data
+- **Session isolation invariant**: the TanStack Query cache must be flushed on every identity change (sign-out, sign-in as a different user, account switch). `AuthProvider` tracks the last-seen user id and calls `queryClient.cancelQueries()` + `removeQueries()` whenever it changes. Do NOT remove this — without it, user A's cached spaces/tasks leak into user B's session on the same browser. The guest-upgrade path (`USER_UPDATED`, same uuid) intentionally skips the clear so the user's work is preserved across the upgrade.
 
 ## Data Model (minimum)
 

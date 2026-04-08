@@ -85,7 +85,7 @@ Single family: **Plus Jakarta Sans** (400, 500, 600, 700). Clear scale with gene
 
 ### Drag-and-Drop Library
 
-`react-beautiful-dnd` was specified by the brief. It provides accessible keyboard DnD out of the box (Tab to focus, Space to lift, arrow keys to move, Space to drop, Escape to cancel). Cards are memoized with `React.memo` so only the dragged card re-renders during a drag.
+The brief specifies `react-beautiful-dnd`. That package is archived and incompatible with React 19's StrictMode, so we use [`@hello-pangea/dnd`](https://github.com/hello-pangea/dnd) — the actively maintained fork with an identical API. It provides accessible keyboard DnD out of the box (Tab to focus, Space to lift, arrow keys to move, Space to drop, Escape to cancel). Cards are memoized with `React.memo` so only the dragged card re-renders during a drag.
 
 ### Optimistic Updates
 
@@ -97,7 +97,11 @@ Tasks within a column are ordered by a `float8` position column. When a task is 
 
 ### Anonymous User Upgrade
 
-On first launch, `supabase.auth.signInAnonymously()` creates a real auth row with `is_anonymous = true`. A corresponding `profiles` row is auto-inserted by trigger. All data (spaces, tasks, comments) is tied to this user's UUID. When the guest later provides email/password credentials, `supabase.auth.linkIdentity()` links the credential to the **existing** auth row — the UUID never changes. The `handle_user_updated` trigger then flips `profiles.anonymous` to `false`. No data migration is required.
+On first launch, `supabase.auth.signInAnonymously()` creates a real auth row with `is_anonymous = true`. A corresponding `profiles` row is auto-inserted by trigger. All data (spaces, tasks, comments) is tied to this user's UUID. When the guest later provides email/password credentials, `supabase.auth.updateUser()` links the credential to the **existing** auth row — the UUID never changes. The `handle_user_updated` trigger then flips `profiles.anonymous` to `false`. No data migration is required.
+
+### Session Isolation
+
+The TanStack Query cache is a process-wide singleton, so on an account switch it will happily serve the previous user's spaces and tasks to the new session — a data-leak bug that also manifests as spurious RLS errors (inserting into a space the new user isn't a member of). `AuthProvider` guards against this by tracking the last-seen auth user id and calling `queryClient.cancelQueries()` + `removeQueries()` on every identity change: sign-out, sign-in as a different user, or account switch. `signInWithPassword` additionally signs out first and clears the cache before authenticating to eliminate races with in-flight queries. The guest-to-permanent upgrade path (`USER_UPDATED` event, same uuid) deliberately skips the clear so the user's work is preserved across the upgrade.
 
 ---
 
@@ -119,9 +123,9 @@ TanStack Query owns all server state. Auth state lives in `AuthContext` (a singl
 
 Three tables (`tasks`, `comments`, `activity_log`) are in the Supabase Realtime publication. Each relevant hook (`useRealtimeTasks`, `useRealtimeComments`, `useRealtimeActivity`) creates a single channel, filters by `space_id` or `task_id`, and cleans up the channel on unmount.
 
-### react-beautiful-dnd
+### @hello-pangea/dnd
 
-Required by the brief. Cards are wrapped in `Draggable` and columns in `Droppable`. `BoardColumn` is memoized with `React.memo` and wrapped in `DragDropContext` at the board level. The drag handler is `useCallback`-memoized to avoid re-subscribing the DnD context on every render.
+Drop-in replacement for the archived `react-beautiful-dnd` required by the brief — same API, React 19 compatible. Cards are wrapped in `Draggable` and columns in `Droppable`. `BoardColumn` is memoized with `React.memo` and wrapped in `DragDropContext` at the board level. The drag handler is `useCallback`-memoized to avoid re-subscribing the DnD context on every render.
 
 ---
 
@@ -283,7 +287,7 @@ src/
 ### Core (Required)
 
 - [x] Kanban board with To Do, In Progress, In Review, Done columns
-- [x] Drag tasks between columns — `react-beautiful-dnd`
+- [x] Drag tasks between columns — `@hello-pangea/dnd` (the maintained fork of `react-beautiful-dnd`)
 - [x] Optimistic updates with rollback on error
 - [x] Guest accounts via Supabase anonymous sign-in
 - [x] Guest-to-email upgrade without creating a new user
@@ -303,10 +307,10 @@ src/
 - [x] Search and filters — fuzzy search on title/description, filter by priority/assignee/label/due-date, URL-persisted, composable, shows "X of Y tasks"
 - [x] Board stats page — headline numbers, status bar chart, priority bar chart, recent activity feed
 - [x] Page transitions — framer-motion fade+slide between routes
-- [x] Keyboard accessibility — Escape closes panels/modals, react-beautiful-dnd keyboard DnD
+- [x] Keyboard accessibility — Escape closes panels/modals, `@hello-pangea/dnd` keyboard DnD
 
 ---
 
 ## Credits
 
-Built with React 19, Vite, TypeScript, TailwindCSS v4, Supabase, react-beautiful-dnd, TanStack Query, framer-motion, date-fns, and lucide-react.
+Built with React 19, Vite, TypeScript, TailwindCSS v4, Supabase, `@hello-pangea/dnd`, TanStack Query, framer-motion, date-fns, and lucide-react.
