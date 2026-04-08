@@ -1,0 +1,166 @@
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+
+@import "tailwindcss";
+
+/* ─── Design Token Definitions ────────────────────────────────────────────── */
+@theme {
+  /* Base surface palette — near-white neumorphic base */
+  --color-surface-base:    #eef1f6;
+  --color-surface-raised:  #f4f6fa;
+  --color-surface-sunken:  #e6e9f0;
+  --color-surface-white:   #ffffff;
+
+  /* Blue accent scale */
+  --color-blue-50:   #eff6ff;
+  --color-blue-100:  #dbeafe;
+  --color-blue-200:  #bfdbfe;
+  --color-blue-300:  #93c5fd;
+  --color-blue-400:  #60a5fa;
+  --color-blue-500:  #3b82f6;
+  --color-blue-600:  #2563eb;
+  --color-blue-700:  #1d4ed8;
+
+  /* Text scale */
+  --color-ink-900:  #1a2035;
+  --color-ink-700:  #374156;
+  --color-ink-500:  #64748b;
+  --color-ink-400:  #94a3b8;
+  --color-ink-300:  #cbd5e1;
+  --color-ink-200:  #e2e8f0;
+
+  /* Status colors */
+  --color-status-todo:       #64748b;
+  --color-status-progress:   #3b82f6;
+  --color-status-review:     #f59e0b;
+  --color-status-done:       #10b981;
+
+  /* Priority colors */
+  --color-priority-low:      #10b981;
+  --color-priority-normal:   #3b82f6;
+  --color-priority-high:     #ef4444;
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Neumorphic shadows — the soul of the design */
+  --shadow-neu-sm:
+    3px 3px 6px rgba(163, 177, 198, 0.6),
+    -3px -3px 6px rgba(255, 255, 255, 0.8);
+
+  --shadow-neu:
+    6px 6px 12px rgba(163, 177, 198, 0.6),
+    -6px -6px 12px rgba(255, 255, 255, 0.8);
+
+  --shadow-neu-lg:
+    10px 10px 20px rgba(163, 177, 198, 0.6),
+    -10px -10px 20px rgba(255, 255, 255, 0.8);
+
+  --shadow-neu-inset:
+    inset 4px 4px 8px rgba(163, 177, 198, 0.6),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+
+  --shadow-neu-pressed:
+    inset 2px 2px 5px rgba(163, 177, 198, 0.7),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+
+  --shadow-neu-blue:
+    6px 6px 12px rgba(59, 130, 246, 0.25),
+    -3px -3px 8px rgba(255, 255, 255, 0.8);
+
+  /* Radii */
+  --radius-neu: 16px;
+  --radius-neu-sm: 10px;
+  --radius-neu-lg: 24px;
+
+  /* Transitions */
+  --ease-neu: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ─── Global Reset & Base Styles ──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background-color: var(--color-surface-base);
+  color: var(--color-ink-700);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-surface-base);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Neumorphic Utility Classes ──────────────────────────────────────────── */
+.neu-surface {
+  background-color: var(--color-surface-base);
+  box-shadow: var(--shadow-neu);
+  border-radius: var(--radius-neu);
+}
+
+.neu-surface-sm {
+  background-color: var(--color-surface-base);
+  box-shadow: var(--shadow-neu-sm);
+  border-radius: var(--radius-neu-sm);
+}
+
+.neu-surface-raised {
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-neu);
+  border-radius: var(--radius-neu);
+}
+
+.neu-inset {
+  background-color: var(--color-surface-sunken);
+  box-shadow: var(--shadow-neu-inset);
+  border-radius: var(--radius-neu-sm);
+}
+
+.neu-pressed {
+  background-color: var(--color-surface-sunken);
+  box-shadow: var(--shadow-neu-pressed);
+  border-radius: var(--radius-neu-sm);
+}
+
+/* ─── Focus Ring ──────────────────────────────────────────────────────────── */
+.focus-neu:focus-visible {
+  outline: 2px solid var(--color-blue-400);
+  outline-offset: 2px;
+  border-radius: var(--radius-neu-sm);
+}
+
+/* ─── Keyframe Animations ─────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ─── Scrollbar Styling ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-300);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-400);
+}
