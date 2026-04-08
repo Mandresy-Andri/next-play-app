@@ -28,12 +28,12 @@ export async function listTasks(spaceId: string): Promise<TaskWithLabels[]> {
   if (error) throw error
 
   // Flatten the nested join shape from Supabase
-  return (data ?? []).map(row => ({
+  return ((data as any) ?? []).map((row: any) => ({
     ...row,
     assignee: row.assignee ?? null,
     labels: ((row.labels ?? []) as Array<{ label: { id: string; name: string; color: string } | null }>)
-      .flatMap(tl => (tl.label ? [tl.label] : [])),
-  }))
+      .flatMap((tl: any) => (tl.label ? [tl.label] : [])),
+  })) as TaskWithLabels[]
 }
 
 /** Create a new task. */

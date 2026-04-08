@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutGrid, BarChart2, Plus, Search, LogOut, User, Users,
+  LayoutGrid, BarChart2, Plus, LogOut, User, Users,
   ChevronRight, X, Menu, Zap, AlertCircle, Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'

@@ -15,7 +15,7 @@ export async function listTaskActivity(taskId: string): Promise<ActivityWithActo
     .order('created_at', { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as ActivityWithActor[]
+  return (data ?? []) as unknown as ActivityWithActor[]
 }
 
 export async function listSpaceActivity(spaceId: string, limit = 20): Promise<ActivityWithActor[]> {
@@ -27,5 +27,5 @@ export async function listSpaceActivity(spaceId: string, limit = 20): Promise<Ac
     .limit(limit)
 
   if (error) throw error
-  return (data ?? []) as ActivityWithActor[]
+  return (data ?? []) as unknown as ActivityWithActor[]
 }

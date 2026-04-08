@@ -16,7 +16,7 @@ export async function listComments(taskId: string): Promise<CommentWithAuthor[]>
     .order('created_at', { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as CommentWithAuthor[]
+  return (data ?? []) as unknown as CommentWithAuthor[]
 }
 
 export async function createComment(input: CommentInsert): Promise<CommentWithAuthor> {
@@ -27,7 +27,7 @@ export async function createComment(input: CommentInsert): Promise<CommentWithAu
     .single()
 
   if (error) throw error
-  return data as CommentWithAuthor
+  return data as unknown as CommentWithAuthor
 }
 
 export async function updateComment(id: string, body: string): Promise<Comment> {
