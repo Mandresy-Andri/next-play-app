@@ -22,7 +22,7 @@ export async function listMembers(spaceId: string): Promise<SpaceMember[]> {
     .order('joined_at', { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as SpaceMember[]
+  return (data ?? []) as unknown as SpaceMember[]
 }
 
 /** Invite an existing user to a space by email. Server-side RPC
