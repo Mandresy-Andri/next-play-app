@@ -44,3 +44,9 @@ coverage/
 # ---------- Claude Code local state (optional) ----------
 # Keep agents and mcp config in git, ignore local/ephemeral state
 .claude/settings.local.json
+
+# ---------- Confidential assessment materials (NEVER commit) ----------
+# Source brief is confidential per CLAUDE.md; the PDF contains personal info.
+docs/NP SDE Assessment Challenge.md
+docs/Mandresy_Andriamasinoro_task_manager_assessment.pdf
+build_overview_pdf.py

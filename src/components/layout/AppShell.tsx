@@ -61,15 +61,15 @@ function Sidebar({ onClose, isMobile }: SidebarProps) {
             <div className="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center shadow-[3px_3px_6px_rgba(37,99,235,0.35),-2px_-2px_4px_rgba(255,255,255,0.6)]">
               <Zap className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
-            <span className="font-bold text-[#1a2035] text-base tracking-tight">Next Play</span>
+            <span className="font-bold text-[#1a2035] text-base tracking-tight">Next Play Board</span>
           </div>
           {isMobile && (
             <NeuIconButton icon={<X />} label="Close sidebar" size="sm" variant="ghost" onClick={onClose} />
           )}
         </div>
 
-        {/* Search */}
-        <div className="px-4 py-3">
+        {/* Search will be implemented in the future*/}
+        {/* <div className="px-4 py-3">
           <div
             className={cn(
               'flex items-center gap-2.5 px-3 py-2 rounded-xl',
@@ -88,7 +88,7 @@ function Sidebar({ onClose, isMobile }: SidebarProps) {
               ⌘K
             </kbd>
           </div>
-        </div>
+        </div> */}
 
         {/* Spaces */}
         <nav className="flex-1 overflow-y-auto px-3 py-2" aria-label="Spaces navigation">

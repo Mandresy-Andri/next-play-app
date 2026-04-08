@@ -19,6 +19,13 @@ const PRIORITY_DOT: Record<TaskPriority, string> = {
   high:   'bg-rose-500',
 }
 
+/** Maps priority → top-border accent color using design tokens */
+const PRIORITY_BORDER: Record<TaskPriority, string> = {
+  low:    'var(--color-priority-low)',
+  normal: 'var(--color-priority-normal)',
+  high:   'var(--color-priority-high)',
+}
+
 const PRIORITY_LABEL: Record<TaskPriority, string> = {
   low:    'Low',
   normal: 'Normal',
@@ -53,6 +60,7 @@ const MAX_LABELS = 3
 
 export const TaskCard = memo(function TaskCard({ task, index, onClick }: TaskCardProps) {
   const priority = (task.priority as TaskPriority) ?? 'normal'
+  const borderColor = PRIORITY_BORDER[priority]
   const visibleLabels = task.labels.slice(0, MAX_LABELS)
   const extraLabels   = task.labels.length - MAX_LABELS
 
@@ -72,7 +80,7 @@ export const TaskCard = memo(function TaskCard({ task, index, onClick }: TaskCar
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick(task) }}
           tabIndex={0}
           role="button"
-          aria-label={`Task: ${task.title}`}
+          aria-label={`Task: ${task.title}, Priority: ${PRIORITY_LABEL[priority]}`}
         >
           <motion.div
             animate={snapshot.isDragging ? {
@@ -87,12 +95,12 @@ export const TaskCard = memo(function TaskCard({ task, index, onClick }: TaskCar
             transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
             className={cn(
               'bg-[#eef1f6] rounded-2xl p-3.5 cursor-grab active:cursor-grabbing',
-              'border border-transparent',
-              'transition-[border-color] duration-150',
-              'hover:border-blue-200/60',
+              'border-t-3 border-transparent',
+              'transition-[border-color,box-shadow] duration-150',
               'focus-visible:outline-2 focus-visible:outline-blue-400 focus-visible:outline-offset-1',
-              snapshot.isDragging && 'border-blue-300/50 cursor-grabbing'
+              snapshot.isDragging && 'cursor-grabbing'
             )}
+            style={{ borderTopColor: borderColor }}
           >
             {/* Priority dot + title */}
             <div className="flex items-start gap-2.5">
