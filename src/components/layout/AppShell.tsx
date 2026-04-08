@@ -2,13 +2,15 @@ import React, { useState, useCallback } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutGrid, BarChart2, Plus, Search, LogOut, User,
+  LayoutGrid, BarChart2, Plus, Search, LogOut, User, Users,
   ChevronRight, X, Menu, Zap, AlertCircle, Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/providers/useAuth'
 import { NeuIconButton, NeuAvatar, NeuBadge, NeuSkeleton } from '@/components/ui'
 import { useSpaces } from '@/hooks/useSpaces'
+import { useMyProfile } from '@/hooks/useProfile'
+import { displayNameOf } from '@/lib/displayName'
 import { NewSpaceModal } from '@/components/board/NewSpaceModal'
 import { ManageLabelsModal } from '@/components/tasks/ManageLabelsModal'
 
@@ -23,14 +25,16 @@ function Sidebar({ onClose, isMobile }: SidebarProps) {
   const navigate = useNavigate()
   const { user, isAnonymous, signOut } = useAuth()
   const { data: spaces = [], isLoading: spacesLoading, isError: spacesError } = useSpaces()
+  const { data: profile } = useMyProfile()
   const [newSpaceOpen, setNewSpaceOpen] = useState(false)
   const [labelsModalOpen, setLabelsModalOpen] = useState(false)
 
-  const displayName = user?.email
-    ? user.email.split('@')[0]
-    : isAnonymous
-      ? 'Guest'
-      : 'User'
+  const displayName = displayNameOf({
+    displayName: profile?.display_name,
+    email: user?.email,
+    isAnonymous,
+    fallback: 'You',
+  })
 
   const handleSignOut = useCallback(async () => {
     await signOut()
@@ -152,6 +156,7 @@ function Sidebar({ onClose, isMobile }: SidebarProps) {
                       {[
                         { to: `/s/${space.id}`, icon: LayoutGrid, label: 'Board' },
                         { to: `/s/${space.id}/stats`, icon: BarChart2, label: 'Stats' },
+                        { to: `/s/${space.id}/team`, icon: Users, label: 'Team' },
                       ].map(item => (
                         <li key={item.label}>
                           <NavLink
@@ -228,16 +233,14 @@ function Sidebar({ onClose, isMobile }: SidebarProps) {
               )}
             </div>
             <div className="flex items-center gap-1">
-              {isAnonymous && (
-                <NeuIconButton
-                  icon={<User />}
-                  label="Sign in to save your account"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => navigate('/auth')}
-                  title="Sign in"
-                />
-              )}
+              <NeuIconButton
+                icon={<User />}
+                label="Edit profile"
+                size="sm"
+                variant="ghost"
+                onClick={() => navigate('/profile')}
+                title="Profile"
+              />
               <NeuIconButton
                 icon={<LogOut />}
                 label="Sign out"

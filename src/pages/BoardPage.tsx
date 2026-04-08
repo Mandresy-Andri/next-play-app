@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { DragDropContext, type DropResult } from 'react-beautiful-dnd'
+import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { NeuButton, InlineError } from '@/components/ui'
@@ -14,7 +14,7 @@ import {
 import { useSpaces } from '@/hooks/useSpaces'
 import { useBoardFilters, applyFilters } from '@/hooks/useBoardFilters'
 import { useRealtimeActivity } from '@/hooks/useActivity'
-import type { TaskWithLabels, TaskStatus } from '@/lib/db/tasks'
+import type { TaskStatus } from '@/lib/db/tasks'
 import type { GroupedTasks } from '@/hooks/useTasks'
 
 export default function BoardPage() {
@@ -50,8 +50,13 @@ export default function BoardPage() {
     filters.labelId !== 'all' ||
     filters.dueDate !== 'all'
 
-  // UI state
-  const [selectedTask, setSelectedTask] = useState<TaskWithLabels | null>(null)
+  // UI state — track only the selected task id, then read the live row from the
+  // React Query cache so label/assignee/etc. updates reflect in the panel immediately.
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
+  const selectedTask = useMemo(
+    () => (selectedTaskId ? allTasks.find(t => t.id === selectedTaskId) ?? null : null),
+    [allTasks, selectedTaskId]
+  )
   const [newTaskStatus, setNewTaskStatus] = useState<TaskStatus>('todo')
   const [newTaskOpen, setNewTaskOpen] = useState(false)
 
@@ -154,7 +159,7 @@ export default function BoardPage() {
                     tasks={filteredGrouped[config.status]}
                     isLoading={isLoading}
                     onAddTask={openNewTask}
-                    onTaskClick={setSelectedTask}
+                    onTaskClick={(t) => setSelectedTaskId(t.id)}
                   />
                 ))}
               </div>
@@ -167,7 +172,7 @@ export default function BoardPage() {
       <TaskDetailPanel
         task={selectedTask}
         spaceId={spaceId}
-        onClose={() => setSelectedTask(null)}
+        onClose={() => setSelectedTaskId(null)}
       />
 
       {/* New Task Modal */}

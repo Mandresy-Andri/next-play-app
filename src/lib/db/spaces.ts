@@ -16,14 +16,20 @@ export async function listSpaces(): Promise<Space[]> {
   return data ?? []
 }
 
-/** Create a new space owned by the current user. */
+/** Create a new space owned by the current user.
+ *
+ * We intentionally do NOT pass `owner_id` — the `spaces.owner_id` column
+ * defaults to `auth.uid()` server-side. That guarantees the value always
+ * matches the JWT on the actual PostgREST request, even immediately after
+ * email confirmation / token refresh when a client-side `user.id` snapshot
+ * could be stale and produce a 42501 RLS violation.
+ */
 export async function createSpace(
-  input: Pick<SpaceInsert, 'name' | 'color' | 'icon'>,
-  ownerId: string
+  input: Pick<SpaceInsert, 'name' | 'color' | 'icon'>
 ): Promise<Space> {
   const { data, error } = await supabase
     .from('spaces')
-    .insert({ ...input, owner_id: ownerId })
+    .insert(input as SpaceInsert)
     .select()
     .single()
 

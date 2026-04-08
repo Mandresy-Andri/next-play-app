@@ -1,8 +1,9 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Search, X, ChevronDown, Filter } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useLabels } from '@/hooks/useLabels'
 import { useMembers } from '@/hooks/useMembers'
+import { displayNameOf } from '@/lib/displayName'
 import type { BoardFilters } from './filterTypes'
 import { DEFAULT_FILTERS } from './filterTypes'
 
@@ -61,6 +62,26 @@ export function FilterBar({ spaceId, filters, onChange, totalTasks, visibleTasks
   const { data: members = [] } = useMembers(spaceId)
   const searchRef = useRef<HTMLInputElement>(null)
 
+  // Local search state — debounced to parent to keep typing snappy.
+  // The input is controlled by `searchInput`, not `filters.search`, so every
+  // keystroke renders immediately; we only push upstream after the user pauses.
+  const [searchInput, setSearchInput] = useState(filters.search)
+
+  // Re-sync when filters.search changes externally (e.g. clear, URL change).
+  useEffect(() => {
+    setSearchInput(filters.search)
+  }, [filters.search])
+
+  // Debounce push to parent
+  useEffect(() => {
+    if (searchInput === filters.search) return
+    const handle = setTimeout(() => {
+      onChange({ ...filters, search: searchInput })
+    }, 250)
+    return () => clearTimeout(handle)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput])
+
   const hasFilters = filters.search !== '' ||
     filters.priority !== 'all' ||
     filters.assigneeId !== 'all' ||
@@ -86,8 +107,8 @@ export function FilterBar({ spaceId, filters, onChange, totalTasks, visibleTasks
         <input
           ref={searchRef}
           type="text"
-          value={filters.search}
-          onChange={e => set('search', e.target.value)}
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
           placeholder="Search tasks…"
           className={cn(
             'w-full pl-8 pr-8 py-1.5 rounded-xl text-xs font-medium text-[#374156]',
@@ -97,9 +118,9 @@ export function FilterBar({ spaceId, filters, onChange, totalTasks, visibleTasks
           )}
           aria-label="Search tasks"
         />
-        {filters.search && (
+        {searchInput && (
           <button
-            onClick={() => { set('search', ''); searchRef.current?.focus() }}
+            onClick={() => { setSearchInput(''); onChange({ ...filters, search: '' }); searchRef.current?.focus() }}
             className="absolute right-2 text-[#94a3b8] hover:text-[#374156] transition-colors"
             aria-label="Clear search"
           >
@@ -133,7 +154,11 @@ export function FilterBar({ spaceId, filters, onChange, totalTasks, visibleTasks
           placeholder="Assignee"
           options={members.map(m => ({
             value: m.user_id,
-            label: m.profile.display_name ?? 'Member',
+            label: displayNameOf({
+              displayName: m.profile?.display_name,
+              isAnonymous: m.profile?.anonymous,
+              fallback: 'Teammate',
+            }),
           }))}
         />
       )}

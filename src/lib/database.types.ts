@@ -1,7 +1,5 @@
 // Generated from Supabase schema — project ref: zgrxevscvjyblzfddsbb
-// Re-generate with: supabase gen types typescript --project-id zgrxevscvjyblzfddsbb
-// or via MCP: mcp__supabase-nextplay__generate_typescript_types
-
+// Do not edit by hand. Regenerate via the supabase-nextplay MCP server.
 export type Json =
   | string
   | number
@@ -44,29 +42,7 @@ export type Database = {
           space_id?: string
           task_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "activity_log_actor_id_fkey"
-            columns: ["actor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activity_log_space_id_fkey"
-            columns: ["space_id"]
-            isOneToOne: false
-            referencedRelation: "spaces"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activity_log_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       comments: {
         Row: {
@@ -93,22 +69,7 @@ export type Database = {
           task_id?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "comments_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       labels: {
         Row: {
@@ -132,15 +93,7 @@ export type Database = {
           name?: string
           space_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "labels_space_id_fkey"
-            columns: ["space_id"]
-            isOneToOne: false
-            referencedRelation: "spaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -188,22 +141,7 @@ export type Database = {
           space_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "space_members_space_id_fkey"
-            columns: ["space_id"]
-            isOneToOne: false
-            referencedRelation: "spaces"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "space_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       spaces: {
         Row: {
@@ -221,7 +159,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name: string
-          owner_id: string
+          owner_id?: string
           updated_at?: string
         }
         Update: {
@@ -233,15 +171,7 @@ export type Database = {
           owner_id?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "spaces_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       task_labels: {
         Row: {
@@ -256,22 +186,7 @@ export type Database = {
           label_id?: string
           task_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "task_labels_label_id_fkey"
-            columns: ["label_id"]
-            isOneToOne: false
-            referencedRelation: "labels"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "task_labels_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tasks: {
         Row: {
@@ -291,7 +206,7 @@ export type Database = {
         Insert: {
           assignee_id?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string
           description?: string | null
           due_date?: string | null
           id?: string
@@ -316,35 +231,22 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tasks_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tasks_space_id_fkey"
-            columns: ["space_id"]
-            isOneToOne: false
-            referencedRelation: "spaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      invite_member_to_space: {
+        Args: { p_email: string; p_space_id: string }
+        Returns: {
+          joined_at: string
+          role: string
+          space_id: string
+          user_id: string
+        }
+      }
       is_space_member: { Args: { p_space_id: string }; Returns: boolean }
       reorder_task: {
         Args: { p_position: number; p_status: string; p_task_id: string }
@@ -443,8 +345,19 @@ export type TablesUpdate<
       : never
     : never
 
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never

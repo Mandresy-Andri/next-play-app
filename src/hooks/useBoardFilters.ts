@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useRef } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { BoardFilters, DueDateFilter, PriorityFilter } from '@/components/board/filterTypes'
 import type { TaskWithLabels } from '@/lib/db/tasks'
@@ -32,35 +32,20 @@ export function useBoardFilters() {
     dueDate: (params.get('due') as DueDateFilter) ?? 'all',
   }), [params])
 
-  // Debounce search writes to URL (300ms)
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
+  // Search is already debounced at the FilterBar input level, so URL writes
+  // happen immediately here. This avoids double-debouncing which caused a
+  // perceived "laggy" typing experience (input value lagged behind keystrokes).
   const setFilters = useCallback((next: BoardFilters) => {
-    const update = () => {
-      setParams(prev => {
-        const p = new URLSearchParams(prev)
-        if (next.search) p.set('q', next.search); else p.delete('q')
-        if (next.priority !== 'all') p.set('priority', next.priority); else p.delete('priority')
-        if (next.assigneeId !== 'all') p.set('assignee', next.assigneeId); else p.delete('assignee')
-        if (next.labelId !== 'all') p.set('label', next.labelId); else p.delete('label')
-        if (next.dueDate !== 'all') p.set('due', next.dueDate); else p.delete('due')
-        return p
-      }, { replace: true })
-    }
-
-    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
-    // Debounce only search changes
-    const prevSearch = params.get('q') ?? ''
-    if (next.search !== prevSearch) {
-      searchDebounceRef.current = setTimeout(update, 300)
-    } else {
-      update()
-    }
-  }, [params, setParams])
-
-  useEffect(() => () => {
-    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
-  }, [])
+    setParams(prev => {
+      const p = new URLSearchParams(prev)
+      if (next.search) p.set('q', next.search); else p.delete('q')
+      if (next.priority !== 'all') p.set('priority', next.priority); else p.delete('priority')
+      if (next.assigneeId !== 'all') p.set('assignee', next.assigneeId); else p.delete('assignee')
+      if (next.labelId !== 'all') p.set('label', next.labelId); else p.delete('label')
+      if (next.dueDate !== 'all') p.set('due', next.dueDate); else p.delete('due')
+      return p
+    }, { replace: true })
+  }, [setParams])
 
   return { filters, setFilters }
 }

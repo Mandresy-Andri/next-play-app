@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listSpaces, createSpace, updateSpace, deleteSpace } from '@/lib/db/spaces'
 import type { Space, SpaceUpdate } from '@/lib/db/spaces'
-import { useAuth } from '@/providers/useAuth'
 import { useToast } from '@/providers/useToast'
 
 export const SPACES_KEY = ['spaces'] as const
@@ -16,14 +15,11 @@ export function useSpaces() {
 
 export function useCreateSpace() {
   const qc = useQueryClient()
-  const { user } = useAuth()
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: (input: { name: string; color: string; icon?: string | null }) => {
-      if (!user) throw new Error('Not authenticated')
-      return createSpace(input, user.id)
-    },
+    mutationFn: (input: { name: string; color: string; icon?: string | null }) =>
+      createSpace(input),
     onSuccess: (newSpace) => {
       qc.setQueryData<Space[]>(SPACES_KEY, old => [...(old ?? []), newSpace])
     },

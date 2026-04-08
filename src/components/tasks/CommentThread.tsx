@@ -9,6 +9,7 @@ import {
   useComments, useCreateComment, useUpdateComment,
   useDeleteComment, useRealtimeComments,
 } from '@/hooks/useComments'
+import { displayNameOf } from '@/lib/displayName'
 import type { CommentWithAuthor } from '@/lib/db/comments'
 
 interface CommentThreadProps {
@@ -29,8 +30,11 @@ function CommentBubble({
   const deleteComment = useDeleteComment()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const authorName = comment.author?.display_name
-    ?? (comment.author?.anonymous ? 'Guest' : 'Member')
+  const authorName = displayNameOf({
+    displayName: comment.author?.display_name,
+    isAnonymous: comment.author?.anonymous,
+    fallback: 'Teammate',
+  })
 
   const handleSaveEdit = () => {
     if (!editBody.trim() || editBody === comment.body) {

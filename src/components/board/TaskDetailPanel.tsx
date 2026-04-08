@@ -8,6 +8,7 @@ import { useMembers } from '@/hooks/useMembers'
 import { CommentThread } from '@/components/tasks/CommentThread'
 import { ActivityFeed } from '@/components/tasks/ActivityFeed'
 import { LabelPicker } from '@/components/tasks/LabelPicker'
+import { displayNameOf } from '@/lib/displayName'
 import type { TaskWithLabels, TaskStatus, TaskPriority } from '@/lib/db/tasks'
 
 interface TaskDetailPanelProps {
@@ -313,26 +314,33 @@ export function TaskDetailPanel({ task, spaceId, onClose }: TaskDetailPanelProps
                     >
                       Unassigned
                     </button>
-                    {members.map(m => (
-                      <button
-                        key={m.user_id}
-                        onClick={() => saveField({ assignee_id: m.user_id })}
-                        className={cn(
-                          'flex items-center gap-1.5 px-2 py-1.5 rounded-xl text-xs font-semibold',
-                          'transition-all duration-150',
-                          task.assignee_id === m.user_id
-                            ? 'bg-blue-100 text-blue-700 shadow-[inset_2px_2px_4px_rgba(96,165,250,0.2),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]'
-                            : 'text-[#374156] hover:bg-[#e8ecf2]'
-                        )}
-                      >
-                        <NeuAvatar
-                          name={m.profile.display_name ?? 'User'}
-                          src={m.profile.avatar_url ?? undefined}
-                          size="xs"
-                        />
-                        {m.profile.display_name ?? 'Member'}
-                      </button>
-                    ))}
+                    {members.map(m => {
+                      const name = displayNameOf({
+                        displayName: m.profile?.display_name,
+                        isAnonymous: m.profile?.anonymous,
+                        fallback: 'Teammate',
+                      })
+                      return (
+                        <button
+                          key={m.user_id}
+                          onClick={() => saveField({ assignee_id: m.user_id })}
+                          className={cn(
+                            'flex items-center gap-1.5 px-2 py-1.5 rounded-xl text-xs font-semibold',
+                            'transition-all duration-150',
+                            task.assignee_id === m.user_id
+                              ? 'bg-blue-100 text-blue-700 shadow-[inset_2px_2px_4px_rgba(96,165,250,0.2),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]'
+                              : 'text-[#374156] hover:bg-[#e8ecf2]'
+                          )}
+                        >
+                          <NeuAvatar
+                            name={name}
+                            src={m.profile?.avatar_url ?? undefined}
+                            size="xs"
+                          />
+                          {name}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}

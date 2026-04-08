@@ -42,6 +42,12 @@ export default function AuthPage() {
     if (mode === 'signup' && isAnonymous) {
       setSuccessMsg('Account upgraded! Your tasks are preserved.')
       setTimeout(() => navigate('/'), 1500)
+    } else if (mode === 'signup') {
+      // With email confirmations enabled, signUp returns success but no session
+      // until the user clicks the confirmation link. Show a clear message
+      // instead of navigating to a broken unauthenticated board.
+      setSuccessMsg('Check your inbox to confirm your email, then sign in.')
+      setMode('signin')
     } else {
       navigate('/')
     }

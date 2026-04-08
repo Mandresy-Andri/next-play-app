@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Draggable } from 'react-beautiful-dnd'
+import { Draggable } from '@hello-pangea/dnd'
 import { motion } from 'framer-motion'
 import { Calendar, AlertCircle } from 'lucide-react'
 import { format, isPast, isToday, addDays, isBefore } from 'date-fns'
@@ -25,11 +25,12 @@ const PRIORITY_LABEL: Record<TaskPriority, string> = {
   high:   'High',
 }
 
-function DueDateChip({ dateStr }: { dateStr: string }) {
+function DueDateChip({ dateStr, isDone }: { dateStr: string; isDone: boolean }) {
   const date = new Date(dateStr + 'T00:00:00')
-  const overdue   = isPast(date) && !isToday(date)
-  const dueSoon   = !overdue && isBefore(date, addDays(new Date(), 3))
-  const dueToday  = isToday(date)
+  // Done tasks never show overdue/soon/today states — just a neutral date chip.
+  const overdue   = !isDone && isPast(date) && !isToday(date)
+  const dueSoon   = !isDone && !overdue && isBefore(date, addDays(new Date(), 3))
+  const dueToday  = !isDone && isToday(date)
 
   const chipClass = cn(
     'inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5',
@@ -139,7 +140,7 @@ export const TaskCard = memo(function TaskCard({ task, index, onClick }: TaskCar
             {(task.due_date || task.assignee) && (
               <div className="flex items-center justify-between mt-2.5 ml-4.5">
                 <div>
-                  {task.due_date && <DueDateChip dateStr={task.due_date} />}
+                  {task.due_date && <DueDateChip dateStr={task.due_date} isDone={task.status === 'done'} />}
                 </div>
                 {task.assignee && (
                   <NeuAvatar

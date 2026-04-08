@@ -9,9 +9,11 @@ import { NeuCardSkeleton } from '@/components/ui/NeuSkeleton'
 import { SpaceRedirect } from '@/components/layout/SpaceRedirect'
 
 // Lazy-load route chunks for lean initial bundle
-const BoardPage = React.lazy(() => import('@/pages/BoardPage'))
-const StatsPage = React.lazy(() => import('@/pages/StatsPage'))
-const AuthPage  = React.lazy(() => import('@/pages/AuthPage'))
+const BoardPage   = React.lazy(() => import('@/pages/BoardPage'))
+const StatsPage   = React.lazy(() => import('@/pages/StatsPage'))
+const AuthPage    = React.lazy(() => import('@/pages/AuthPage'))
+const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'))
+const TeamPage    = React.lazy(() => import('@/pages/TeamPage'))
 
 /** Full-screen loading shell used while lazy chunks resolve */
 function PageLoader() {
@@ -47,6 +49,10 @@ function AnimatedRoutes() {
           {/* Space routes */}
           <Route path="/s/:spaceId" element={<BoardPage />} />
           <Route path="/s/:spaceId/stats" element={<StatsPage />} />
+          <Route path="/s/:spaceId/team" element={<TeamPage />} />
+
+          {/* Account */}
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* Auth */}
           <Route path="/auth" element={<AuthPage />} />

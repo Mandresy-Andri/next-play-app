@@ -56,6 +56,7 @@ export function NewTaskModal({ open, onClose, spaceId, defaultStatus = 'todo', d
     e.preventDefault()
     if (!title.trim() || !user) return
 
+    // `created_by` is defaulted server-side to auth.uid() — see migration 008.
     createTask.mutate({
       title: title.trim(),
       description: description.trim() || null,
@@ -63,7 +64,6 @@ export function NewTaskModal({ open, onClose, spaceId, defaultStatus = 'todo', d
       priority,
       due_date: dueDate || null,
       space_id: spaceId,
-      created_by: user.id,
       position: defaultPosition,
     })
 
