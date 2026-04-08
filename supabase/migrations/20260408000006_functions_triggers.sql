@@ -63,11 +63,17 @@ begin
     end if;
 
   elsif (tg_op = 'DELETE') then
-    v_action  := 'task.deleted';
-    v_payload := jsonb_build_object('title', old.title);
-
+    -- task_id intentionally null: the row is already gone when an AFTER DELETE
+    -- trigger fires, so referencing old.id would violate activity_log_task_id_fkey.
+    -- The deleted task id is preserved in the payload for audit purposes.
     insert into public.activity_log (space_id, task_id, actor_id, action, payload)
-    values (old.space_id, old.id, old.created_by, v_action, v_payload);
+    values (
+      old.space_id,
+      null,
+      old.created_by,
+      'task.deleted',
+      jsonb_build_object('task_id', old.id, 'title', old.title)
+    );
   end if;
 
   return coalesce(new, old);

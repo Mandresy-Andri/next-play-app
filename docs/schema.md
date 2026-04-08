@@ -385,7 +385,7 @@ Fires `AFTER INSERT OR UPDATE OR DELETE ON public.tasks`. Appends rows to `activ
   - `status` changed — `task.status_changed` with `{from, to}`
   - `assignee_id` changed — `task.assigned` with `{from, to}`
   - `title` or `description` changed — `task.edited` with `{fields: [...]}`
-- `DELETE` — `task.deleted` with `{title}`
+- `DELETE` — `task.deleted` with `{task_id, title}`. The inserted row sets `activity_log.task_id = null` because an `AFTER DELETE` trigger fires after the task row is already gone — referencing `old.id` via the FK would raise `activity_log_task_id_fkey` and surface as a 409 on the client. The deleted id is preserved in the payload instead.
 
 Security definer is required because there is no client INSERT policy on `activity_log` — the table is intentionally write-protected from the client to keep the log tamper-proof.
 
