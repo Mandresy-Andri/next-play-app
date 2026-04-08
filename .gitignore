@@ -2,6 +2,7 @@
 # Any file that might hold tokens, keys, or credentials
 .env
 .env.*
+.env.example
 !.env.example
 *.local
 .mcp.json.local
